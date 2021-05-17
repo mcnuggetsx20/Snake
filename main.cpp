@@ -16,11 +16,11 @@ using namespace sf;
 
 vector <pair <int, int>> pos;
 vector <bitset <45>> taken(40);
-int x_apple, y_apple, r_factor = time(NULL), ans = 0, score = 0, mode = 0, counter = 0, diff = 1, x;
+int x_apple, y_apple, r_factor = time(NULL), ans = 0, score = 0, mode = 1, counter = 0, diff = 1, x;
 pair <int, int> hp;
-bool screen_on = true, eaten = false, start = false, refresh = true, lost = false, vim_practice = true;
+bool screen_on = true, eaten = false, start = false, refresh = true, lost = false, vim_practice = true, over_screen = false;
 
-Color bck_color(170, 218, 24), score_color(195, 195, 195);
+Color bck_color(170, 218, 24);
 
 int main()
 {
@@ -36,7 +36,7 @@ int main()
     x_apple = (rand()%39) + 4;
     y_apple = (rand()%35) + 4;    
 
-    RenderWindow screen {VideoMode{768, 704}, "snake"};
+    RenderWindow screen {VideoMode{768, 704}, "snake v1.0"};
     screen.setFramerateLimit(60);
     
     Texture iapple, ihead, ibody, ibck;
@@ -52,16 +52,19 @@ int main()
     h_s1.open("high_score.txt");
     int l;
     h_s1 >> l;
-    cout << l;
     h_s1.close();
 
     Font font;
     font.loadFromFile("assets/Minecraft.ttf");
 
-    Text score_display;
+    Text score_display, game_over;
     score_display.setFont(font);
     score_display.setCharacterSize(24);
     score_display.setFillColor(Color::Black);
+
+    game_over.setFont(font);
+    game_over.setCharacterSize(40);
+    game_over.setFillColor(Color::Black);
 
     Event event;  
 
@@ -122,8 +125,37 @@ int main()
                     mode = 3;
                     start = true;
                 }
+                if(Keyboard::isKeyPressed(Keyboard::Space) && over_screen){
+                    over_screen = false;
+                }
             }
-        }      
+        }
+        if(over_screen){
+
+            game_over.setPosition(265, 315);
+            game_over.setString("Game Over");
+            screen.draw(game_over);
+            screen.display();
+             while(over_screen){
+                while(screen.pollEvent(event)){
+                    if(event.type == Event::Closed){
+                        over_screen = false;
+                        screen_on = false;
+                    }
+
+                    else if(event.type == Event::KeyPressed){
+                        if(Keyboard::isKeyPressed(Keyboard::Space)){
+                            over_screen = false;
+                        }
+                        else if(Keyboard::isKeyPressed(Keyboard::Escape)){
+                            over_screen = false;
+                            screen_on = false;
+                        }
+                    }
+                }
+            }
+        }
+
         if(counter != 6){
             diff = 0;
         }
@@ -147,7 +179,6 @@ int main()
             }
 
             if(hp.first == -1 || hp.first == 51 || hp.second == -1 || hp.second == 44){
-                cout << "u lost";
                 lost = true;
             }
         }
@@ -179,10 +210,8 @@ int main()
 
         for(int i = 0; i < pos.size()-1; ++i){
             body.setPosition(pos[i].first * 16, pos[i].second * 16);
-            //cout << pos[i].first << " " << pos[i].second << "\n";
             screen.draw(body);
             if(pos[i] == hp){
-                cout << "u lost";
                 lost = true;
                 break;
             }
@@ -195,7 +224,8 @@ int main()
             if(taken[y_apple][x_apple]){
                 cout << "zajete" << "\n";
                 while(taken[y_apple][x_apple]){
-                    srand(r_factor + time(NULL));
+                    r_factor += time(NULL);
+                    srand(r_factor);
                     x_apple = (rand()%39) + 4;
                     y_apple = (rand()%35) + 4;                     
                 }
@@ -240,7 +270,9 @@ int main()
             h_s2.close();
             srand(r_factor + time(NULL));
             x_apple = (rand()%39) + 4;
-            y_apple = (rand()%35) + 4; 
+            y_apple = (rand()%35) + 4;
+            over_screen = true;
+            mode = 1; 
         }
     }
     h_s1.open("high_score.txt");
