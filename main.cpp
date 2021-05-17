@@ -16,9 +16,9 @@ using namespace sf;
 
 vector <pair <int, int>> pos;
 vector <bitset <45>> taken(40);
-int x_apple, y_apple, r_factor = time(NULL), ans = 0, score = 0, mode = 0, counter = 0, diff = 1;
+int x_apple, y_apple, r_factor = time(NULL), ans = 0, score = 0, mode = 0, counter = 0, diff = 1, x;
 pair <int, int> hp;
-bool screen_on = true, eaten = false, start = false, refresh = true, lost = false;
+bool screen_on = true, eaten = false, start = false, refresh = true, lost = false, vim_practice = true;
 
 Color bck_color(170, 218, 24), score_color(195, 195, 195);
 
@@ -67,6 +67,24 @@ int main()
 
     Clock clock;
 
+    Keyboard::Key up;
+    Keyboard::Key down;
+    Keyboard::Key rt;
+    Keyboard::Key lt;
+
+    if(vim_practice){
+        up = Keyboard::K;
+        down = Keyboard::J;
+        rt = Keyboard::L;
+        lt = Keyboard::H;
+    }
+    else{
+        up = Keyboard::Up;
+        down = Keyboard::Down;
+        rt = Keyboard::Right;
+        lt = Keyboard::Left;
+    }
+
     while(screen_on)
     {
         ++counter;   
@@ -88,20 +106,20 @@ int main()
                     }
                     break;
                 }
-
-                if(Keyboard::isKeyPressed(Keyboard::Up) && mode != 2){
+                if(Keyboard::isKeyPressed(up) && mode != 2){
                     mode = 1;
+                    start = true;
                 }
-                if(Keyboard::isKeyPressed(Keyboard::Down) && mode != 1){
+                if(Keyboard::isKeyPressed(down) && mode != 1){
                     mode = 2;
+                    start = true;
                 }
-                if(Keyboard::isKeyPressed(Keyboard::Right) && mode != 3){
+                if(Keyboard::isKeyPressed(rt) && mode != 3){
                     mode = 4;
+                    start = true;
                 }
-                if(Keyboard::isKeyPressed(Keyboard::Left) && mode != 4){
+                if(Keyboard::isKeyPressed(lt) && mode != 4){
                     mode = 3;
-                }
-                if(!start){
                     start = true;
                 }
             }
@@ -209,19 +227,28 @@ int main()
             pos.push_back(make_pair(23, 24));    
             pos.push_back(hp);
             h_s1.open("high_score.txt");
-            //h_s2.open("high_score.txt");
             h_s1 >> l;
             h_s1.close();
             
             h_s2.open("high_score.txt");
-            cout << l << " egeg" << "\n";
-            int x = max(l, score);
+            x = max(l, score);
             h_s2 << x;
             l = x;
             score = 0;
             start = false;
             lost = false;
             h_s2.close();
+            srand(r_factor + time(NULL));
+            x_apple = (rand()%39) + 4;
+            y_apple = (rand()%35) + 4; 
         }
     }
+    h_s1.open("high_score.txt");
+    h_s1 >> l;
+    h_s1.close();
+
+    h_s2.open("high_score.txt");
+    x = max(l, score);
+    h_s2 << x;
+    h_s2.close();
 }
