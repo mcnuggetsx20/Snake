@@ -18,7 +18,7 @@ vector <pair <int, int>> pos;
 vector <bitset <45>> taken(40);
 int x_apple, y_apple, r_factor = time(NULL), ans = 0, score = 0, mode = 0, counter = 0, diff = 1;
 pair <int, int> hp;
-bool screen_on = true, eaten = false, start = false, refresh = true;
+bool screen_on = true, eaten = false, start = false, refresh = true, lost = false;
 
 Color bck_color(170, 218, 24), score_color(195, 195, 195);
 
@@ -50,8 +50,10 @@ int main()
     ifstream h_s1;
     ofstream h_s2;
     h_s1.open("high_score.txt");
-    string l;
+    int l;
     h_s1 >> l;
+    cout << l;
+    h_s1.close();
 
     Font font;
     font.loadFromFile("assets/Minecraft.ttf");
@@ -104,7 +106,6 @@ int main()
                 }
             }
         }      
-        //8 zer
         if(counter != 6){
             diff = 0;
         }
@@ -129,33 +130,21 @@ int main()
 
             if(hp.first == -1 || hp.first == 51 || hp.second == -1 || hp.second == 44){
                 cout << "u lost";
-                screen_on = false;
+                lost = true;
             }
         }
-
-        //cout << hp.first << " " << hp.second << "\n";
 
         //wypisywanie
-        for(int i = 0; (i < 44 && screen_on); ++ i){
-            for(int j = 0; j < 50; ++j){
-                ans = 0;
-                if(i == y_apple && j == x_apple){
-                    apple.setPosition(16*j, 16*i);
-                    screen.draw(apple);
-                    ++ans;                    
-                }
-                if(i == hp.second && j == hp.first){
-                    head.setPosition(j*16, i*16);
-                    screen.draw(head);
-                    ++ans;
-                }
-                if(ans == 2){
-                    eaten = true;
-                }
-            }
+        apple.setPosition(16 * x_apple, 16 * y_apple);
+        head.setPosition(16 * hp.first, 16 * hp.second);
+        
+        screen.draw(apple);
+        screen.draw(head);
+
+        if(hp.first == x_apple && hp.second == y_apple){
+            eaten = true;
         }
 
-        //cout << diff << " " << start << " " << refresh << "\n";
         if(diff && start){
             pos.push_back(hp);
             taken[hp.second][hp.first] = 1;
@@ -176,7 +165,7 @@ int main()
             screen.draw(body);
             if(pos[i] == hp){
                 cout << "u lost";
-                screen_on = false;
+                lost = true;
                 break;
             }
         }
@@ -188,7 +177,7 @@ int main()
             if(taken[y_apple][x_apple]){
                 cout << "zajete" << "\n";
                 while(taken[y_apple][x_apple]){
-                    srand(r_factor);
+                    srand(r_factor + time(NULL));
                     x_apple = (rand()%39) + 4;
                     y_apple = (rand()%35) + 4;                     
                 }
@@ -197,7 +186,7 @@ int main()
             ++score;
             refresh = false;
         }
-
+        
         //cout << pos.size() << "\n";
         screen.display();
         screen.clear();
@@ -208,13 +197,31 @@ int main()
         screen.draw(score_display);
         
         score_display.setPosition(0, 25);
-        score_display.setString("High Score: " + l);
+        score_display.setString("High Score: " + to_string(l));
         screen.draw(score_display); 
+
+        if(lost){
+            pos.clear();
+            hp.first = 23;
+            hp.second =23;
+            pos.push_back(make_pair(23, 26));        
+            pos.push_back(make_pair(23, 25));     
+            pos.push_back(make_pair(23, 24));    
+            pos.push_back(hp);
+            h_s1.open("high_score.txt");
+            //h_s2.open("high_score.txt");
+            h_s1 >> l;
+            h_s1.close();
+            
+            h_s2.open("high_score.txt");
+            cout << l << " egeg" << "\n";
+            int x = max(l, score);
+            h_s2 << x;
+            l = x;
+            score = 0;
+            start = false;
+            lost = false;
+            h_s2.close();
+        }
     }
-    h_s1.close();
-    h_s2.open("high_score.txt");
-    int prev = stoi(l);
-    int x = max(prev, score);
-    h_s2 << x;
-    h_s2.close();
 }
