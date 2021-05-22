@@ -14,7 +14,7 @@ vector <pair <int, int>> pos;
 vector <bitset <45>> taken(40);
 int x_apple, y_apple, r_factor = time(NULL), ans = 0, score = 0, mode = 1, counter = 0, diff = 0, x;
 pair <int, int> hp;
-bool screen_on = true, eaten = false, start = false, refresh = true, lost = false, vim_practice = true, over_screen = false, game = false, menu = true, new_score = false;
+bool screen_on = true, eaten = false, start = false, refresh = true, lost = false, vim_practice = true, over_screen = false, game = false, options = false,  menu = true, new_score = false, clicked1 = false, clicked2 = false, clicked3 = false;
 Vector2i _mouse;
 
 Color bck_color(170, 218, 24);
@@ -35,14 +35,18 @@ int main()
 
     RenderWindow screen {VideoMode{768, 704}, "snake v1.0"};
     screen.setFramerateLimit(60);
-    
-    Texture iapple, ihead, ibody, ibck, imain;
+
+    Texture iapple, ihead, ibody, ibck, imain, iquit, iplay, iopts;
     iapple.loadFromFile("assets/apple.png");
     ihead.loadFromFile("assets/head.png");    
     ibody.loadFromFile("assets/body.png");
     ibck.loadFromFile("assets/background.png");
     imain.loadFromFile("assets/main_menu.png");
-    Sprite apple(iapple), head(ihead), body(ibody), bck(ibck), main(imain);
+    iquit.loadFromFile("assets/quit.png");
+    iplay.loadFromFile("assets/play.png");
+    iopts.loadFromFile("assets/opts.png");
+    
+    Sprite apple(iapple), head(ihead), body(ibody), bck(ibck), main(imain), quit(iquit), play(iplay), opts(iopts);
     bck.setPosition(0,0);
     main.setPosition(0,0);
 
@@ -92,7 +96,10 @@ int main()
 
     while(screen_on)
     {
-        r_factor += time(NULL);  
+        r_factor += time(NULL);
+        /*clicked1 = false;
+        clicked2 = false;
+        clicked3 = false;*/  
 
         while(screen.pollEvent(event)){  
             if(event.type == Event::Closed){
@@ -169,15 +176,32 @@ int main()
 
             else if(event.type == Event::MouseButtonPressed){
                 if(Mouse::isButtonPressed(Mouse::Left)){
+                    cout << "dery";
+                    _mouse = Mouse::getPosition(screen);
+                    if(menu){
+                        if((_mouse.x >= 268 && _mouse.x <= 491) && (_mouse.y >= 285 && _mouse.y <= 351)){                                
+                            clicked1 = true;
+                        }
+                        else if((_mouse.x >= 268 && _mouse.x <= 491) && (_mouse.y >= 459 && _mouse.y <= 525)){
+                            clicked3 = true;
+                        }
+                    }
+                }
+            }
+
+            else if(event.type == Event::MouseButtonReleased){
+                if(event.mouseButton.button == Mouse::Left){
                     _mouse = Mouse::getPosition(screen);
                     if(menu){
                         if((_mouse.x >= 268 && _mouse.x <= 491) && (_mouse.y >= 285 && _mouse.y <= 351)){                                
                             menu = false;
                             game = true;
                             mode = 1;
+                            clicked1 = false;
                             cout << _mouse.x << " " << _mouse.y << "\n";
                         }
                         else if((_mouse.x >= 268 && _mouse.x <= 491) && (_mouse.y >= 459 && _mouse.y <= 525)){
+                            clicked3 = false;
                             menu = false;
                             screen_on = false;
                         }
@@ -187,9 +211,17 @@ int main()
         }
 
         if(menu){
+            screen.clear();
             screen.draw(main);
+            if(clicked1){
+                play.setPosition(268, 289);
+                screen.draw(play);
+            }
+            else if(clicked3){
+                quit.setPosition(268, 463);
+                screen.draw(quit);
+            }
             screen.display();
-            _mouse = Mouse::getPosition(screen);
 
 
         }
@@ -284,6 +316,12 @@ int main()
                 game_over.setString(to_string(l));
                 screen.draw(game_over);
             }
+            screen.display();
+        }
+
+        if(options){
+            screen.clear();
+            screen.draw(opts);
             screen.display();
         }
     }
