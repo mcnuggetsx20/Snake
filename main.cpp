@@ -45,6 +45,7 @@ int main()
     iquit.loadFromFile("assets/quit.png");
     iplay.loadFromFile("assets/play.png");
     iopts.loadFromFile("assets/opts.png");
+
     
     Sprite apple(iapple), head(ihead), body(ibody), bck(ibck), main(imain), quit(iquit), play(iplay), opts(iopts);
     bck.setPosition(0,0);
@@ -109,7 +110,7 @@ int main()
 
             else if(event.type == Event::KeyPressed){
                 if(Keyboard::isKeyPressed(Keyboard::Escape)){
-                    if(game){
+                    /*if(game){
                         if(start){
                             start = false;
                         }
@@ -131,8 +132,8 @@ int main()
                             y_apple = (rand()%35) + 4;
                             over_screen = false;
                         }
-                    }
-                    else if(over_screen){
+                    }*/
+                    if(over_screen){
                         over_screen = false;
                         menu = true;
                     }
