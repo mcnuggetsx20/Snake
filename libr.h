@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void move(pair<int, int> &hp, int diff, int mode, int x_apple, int y_apple, bool &lost, bool &eaten){
+void move(vector <pair <int, int>> bldr, pair<int, int> &hp, int diff, int mode, int x_apple, int y_apple, bool &lost, bool &eaten){
 
     if(mode==1 && hp.second != 4){
         hp.second -= diff;
@@ -27,6 +27,11 @@ void move(pair<int, int> &hp, int diff, int mode, int x_apple, int y_apple, bool
     if(hp.first == x_apple && hp.second == y_apple){
         eaten = true;
     }
+	for(auto i: bldr){
+		if(hp.first * 16 >= i.first * 32 && hp.first * 16 <= i.first * 32 + 16 && hp.second * 16 >= i.second * 32 && hp.second * 16 <= i.second * 32 + 16){
+			lost = true;
+		}
+	}
 }
 
 void update(vector <pair <int, int>> &pos, vector <bitset <45>> &taken, pair <int, int> hp, bool &refresh){
