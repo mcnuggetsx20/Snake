@@ -46,10 +46,14 @@ int main()
 	
 	choose(x_apple, y_apple, taken, r_factor, 39, 35, 4, 4, 0, 0);
 
+	Image icon;
+	icon.loadFromFile("assets/head.png");
+
     RenderWindow screen {VideoMode{768, 704}, "snake v1.0"};
+	screen.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
     screen.setFramerateLimit(60);
 
-    Texture iapple, ihead, ibody, ibck, imain, iquit, iplay, iopts, ioptions_screen, iboulder, iover, ipa, imb;
+    Texture iapple, ihead, ibody, ibck, imain, iquit, iplay, iopts, ioptions_screen, iboulder, iover, ipa, imb, ion, ioff;
     iapple.loadFromFile("assets/apple.png");
     ihead.loadFromFile("assets/head.png");    
     ibody.loadFromFile("assets/body.png");
@@ -63,8 +67,10 @@ int main()
 	iover.loadFromFile("assets/gameover.png");
 	ipa.loadFromFile("assets/play_again.png");
 	imb.loadFromFile("assets/main_button.png");
+	ion.loadFromFile("assets/frame_on.png");
+	ioff.loadFromFile("assets/frame_off.png");
     
-    Sprite apple(iapple), head(ihead), body(ibody), bck(ibck), main(imain), quit(iquit), play(iplay), opts(iopts), options_screen(ioptions_screen), boulder(iboulder), over(iover), pa(ipa), mb(imb);;
+    Sprite apple(iapple), head(ihead), body(ibody), bck(ibck), main(imain), quit(iquit), play(iplay), opts(iopts), options_screen(ioptions_screen), boulder(iboulder), over(iover), pa(ipa), mb(imb), f_on(ion), f_off(ioff);
     bck.setPosition(0,0);
     main.setPosition(0,0);
 	mb.setPosition(107, 508);
@@ -72,7 +78,8 @@ int main()
 	quit.setPosition(268, 463);
 	opts.setPosition(268, 376);
 	play.setPosition(268, 289);
-
+	f_on.setPosition(610, 136);
+	f_off.setPosition(610, 136);
 
     ifstream h_s1;
     ofstream h_s2;
@@ -80,6 +87,11 @@ int main()
     int l;
     h_s1 >> l;
     h_s1.close();
+
+	h_s1.open("config.txt");
+	h_s1 >> vim_practice;
+	h_s1.close();
+
 
     Font font;
     font.loadFromFile("assets/Minecraft.ttf");
@@ -137,22 +149,24 @@ int main()
                     }
                     break;
                 }
-                if(Keyboard::isKeyPressed(up) && mode != 2){
-                    mode = 1;
-                    start = true;
-                }
-                if(Keyboard::isKeyPressed(down) && mode != 1){
-                    mode = 2;
-                    start = true;
-                }
-                if(Keyboard::isKeyPressed(rt) && mode != 3){
-                    mode = 4;
-                    start = true;
-                }
-                if(Keyboard::isKeyPressed(lt) && mode != 4){
-                    mode = 3;
-                    start = true;
-                }
+				if(game){
+					if(Keyboard::isKeyPressed(up) && mode != 2){
+						mode = 1;
+						start = true;
+					}
+					if(Keyboard::isKeyPressed(down) && mode != 1){
+						mode = 2;
+						start = true;
+					}
+					if(Keyboard::isKeyPressed(rt) && mode != 3){
+						mode = 4;
+						start = true;
+					}
+					if(Keyboard::isKeyPressed(lt) && mode != 4){
+						mode = 3;
+						start = true;
+					}
+				}
                 if(Keyboard::isKeyPressed(Keyboard::Space)){
                     if(over_screen){
                         over_screen = false;
@@ -228,6 +242,24 @@ int main()
 							options = false;
 							menu = true;
 						}
+						else if(_mouse.x >= 610 && _mouse.x <= 705 && _mouse.y >= 136 && _mouse.y <= 186){
+							vim_practice = !vim_practice;
+							if(vim_practice){
+								up = Keyboard::K;
+								down = Keyboard::J;
+								rt = Keyboard::L;
+								lt = Keyboard::H;
+							}
+							else{
+							up = Keyboard::Up;
+							down = Keyboard::Down;
+							rt = Keyboard::Right;
+							lt = Keyboard::Left;
+							}
+							h_s2.open("config.txt");
+							h_s2 << vim_practice;
+							h_s2.close();
+						}
 					}
 					else if(over_screen){
 						if(_mouse.x >= 107 && _mouse.x <= 319 && _mouse.y >= 504 && _mouse.y <= 570){
@@ -260,7 +292,7 @@ int main()
             screen.display();
         }
 
-        if(game){
+		else if(game){
             ++counter;
             diff = !(counter%6);
             counter %= 6;
@@ -285,7 +317,6 @@ int main()
             screen.draw(apple);
             screen.draw(head);
             for(int i = 0; i < pos.size()-1; ++i){
-				cout << taken[pos[i].second][pos[i].first] << "\n";
                 body.setPosition(pos[i].first * 16, pos[i].second * 16);
                 screen.draw(body);
                 if(pos[i] == hp){
@@ -344,7 +375,7 @@ int main()
             }
         }
 
-        if(over_screen){
+		else if(over_screen){
             over.setPosition(64, 64);
 			screen.draw(over);
 
@@ -367,9 +398,15 @@ int main()
             screen.display();
         }
 
-        if(options){
+		else if(options){
             screen.clear();
             screen.draw(options_screen);
+			if(vim_practice){
+				screen.draw(f_on);
+			}
+			else{
+				screen.draw(f_off);
+			}
             screen.display();
         }
     }
