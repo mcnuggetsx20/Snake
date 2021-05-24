@@ -28,7 +28,7 @@ void move(vector <pair <int, int>> bldr, pair<int, int> &hp, int diff, int mode,
         eaten = true;
     }
 	for(auto i: bldr){
-		if(hp.first * 16 >= i.first * 32 && hp.first * 16 <= i.first * 32 + 16 && hp.second * 16 >= i.second * 32 && hp.second * 16 <= i.second * 32 + 16){
+		if(hp.first >= i.first && hp.first <= i.first + 1 && hp.second >= i.second && hp.second <= i.second + 1){
 			lost = true;
 		}
 	}
@@ -47,19 +47,22 @@ void update(vector <pair <int, int>> &pos, vector <bitset <45>> &taken, pair <in
     }
 }
 
+void choose(int &x, int &y, vector <bitset <45>> taken, int r_factor, int a, int b, int c, int d, int w, int h){
+	srand(r_factor);
+	x = (rand()%a) + c;
+	y = (rand()%b) + d;
+	if(taken[y][x]){
+		while(taken[y][x] || taken[y][x+w] || taken[y+h][w] || taken[y+h][y+w]){
+			r_factor += time(NULL);
+			srand(r_factor);
+			x = (rand()%a) + c;
+			y = (rand()%b) + d;
+		}
+	}
+}
+
 void eat(vector <bitset <45>> taken, int &r_factor, int &x_apple, int &y_apple, int &score, bool &eaten, bool &refresh){
-    srand(r_factor);
-    x_apple = (rand()%39) + 4;
-    y_apple = (rand()%35) + 4; 
-    if(taken[y_apple][x_apple]){
-        cout << "zajete" << "\n";
-        while(taken[y_apple][x_apple]){
-            r_factor += time(NULL);
-            srand(r_factor);
-            x_apple = (rand()%39) + 4;
-            y_apple = (rand()%35) + 4;                     
-        }
-    }  
+	choose(x_apple, y_apple, taken, r_factor, 39, 35, 4, 4, 0, 0);
     eaten = false;
     ++score;
     refresh = false;
