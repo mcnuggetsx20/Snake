@@ -15,7 +15,7 @@ vector <pair <int, int>> bldr(3);
 vector <bitset <45>> taken(40);
 int x_apple, y_apple, x_boulder, y_boulder, r_factor = time(NULL), ans = 0, score = 0, mode = 1, counter = 0, diff = 0, x, arrow = 0;
 pair <int, int> hp;
-bool screen_on = true, eaten = false, start = false, refresh = true, lost = false, vim_practice = true, over_screen = false, game = false, options = false,  menu = true, new_score = false, clicked1 = false, clicked2 = false, clicked3 = false;
+bool screen_on = true, eaten = false, start = false, refresh = true, lost = false, vim_practice = true, over_screen = false, game = false, options = false,  menu = true, new_score = false, clicked1 = false, clicked2 = false, clicked3 = false, clicked4 = false, clicked5= false;
 Vector2i _mouse;
 
 Color bck_color(170, 218, 24);
@@ -35,26 +35,21 @@ int main()
 	taken[24][23] = 1;
 	taken[23][23] = 1;
     
-    srand(r_factor);
-    x_apple = (rand()%39) + 4;
-    y_apple = (rand()%35) + 4;    
-
 	for(int i = 0 ; i < 3; ++ i){
 		r_factor += i * i + 6577;
-		srand(r_factor);
-		bldr[i].first = (rand()%17) + 3;
-		bldr[i].second = (rand()%15) + 4;
+		choose(bldr[i].first, bldr[i].second, taken, r_factor, 30, 30, 6, 6, 1, 1);
 		taken[bldr[i].second][bldr[i].first] = true;
 		taken[bldr[i].second][bldr[i].first + 1] = true;
 		taken[bldr[i].second + 1][bldr[i].first + 1] = true;
 		taken[bldr[i].second + 1][bldr[i].first] = true;
 	}
 	
+	choose(x_apple, y_apple, taken, r_factor, 39, 35, 4, 4, 0, 0);
 
     RenderWindow screen {VideoMode{768, 704}, "snake v1.0"};
     screen.setFramerateLimit(60);
 
-    Texture iapple, ihead, ibody, ibck, imain, iquit, iplay, iopts, ioptions_screen, iboulder;
+    Texture iapple, ihead, ibody, ibck, imain, iquit, iplay, iopts, ioptions_screen, iboulder, iover, ipa, imb;
     iapple.loadFromFile("assets/apple.png");
     ihead.loadFromFile("assets/head.png");    
     ibody.loadFromFile("assets/body.png");
@@ -65,15 +60,20 @@ int main()
     iopts.loadFromFile("assets/opts.png");
     ioptions_screen.loadFromFile("assets/options.png");
 	iboulder.loadFromFile("assets/boulder.png");
-
+	iover.loadFromFile("assets/gameover.png");
+	ipa.loadFromFile("assets/play_again.png");
+	imb.loadFromFile("assets/main_button.png");
     
-    Sprite apple(iapple), head(ihead), body(ibody), bck(ibck), main(imain), quit(iquit), play(iplay), opts(iopts), options_screen(ioptions_screen), boulder(iboulder);
+    Sprite apple(iapple), head(ihead), body(ibody), bck(ibck), main(imain), quit(iquit), play(iplay), opts(iopts), options_screen(ioptions_screen), boulder(iboulder), over(iover), pa(ipa), mb(imb);;
     bck.setPosition(0,0);
     main.setPosition(0,0);
+	mb.setPosition(107, 508);
+	pa.setPosition(438, 508);
+	quit.setPosition(268, 463);
+	opts.setPosition(268, 376);
+	play.setPosition(268, 289);
 
-    RectangleShape rec(Vector2f(640, 576));
-    rec.setFillColor(bck_color);
-    
+
     ifstream h_s1;
     ofstream h_s2;
     h_s1.open("high_score.txt");
@@ -183,26 +183,36 @@ int main()
                             clicked3 = true;
                         }
                     }
+					else if(over_screen){
+						if(_mouse.x >= 107 && _mouse.x <= 319 && _mouse.y >= 504 && _mouse.y <= 570){
+							clicked4 = true;
+						}	
+						else if(_mouse.x >= 438 && _mouse.x <= 661 && _mouse.y >= 504 && _mouse.y <= 570){
+							clicked5 = true;
+						}
+					}
                 }
             }
 
             else if(event.type == Event::MouseButtonReleased){
                 if(event.mouseButton.button == Mouse::Left){
                     _mouse = Mouse::getPosition(screen);
+					clicked1 = false;
+					clicked2 = false;
+					clicked3 = false;
+					clicked4 = false;
+					clicked5 = false;
                     if(menu){
                         if((_mouse.x >= 268 && _mouse.x <= 491) && (_mouse.y >= 285 && _mouse.y <= 351)){         
                             menu = false;
                             game = true;
                             mode = 1;
-                            clicked1 = false;
                         }
                         else if((_mouse.x >= 268 && _mouse.x <= 491) && (_mouse.y >= 459 && _mouse.y <= 525)){
-                            clicked3 = false;
                             menu = false;
                             screen_on = false;
                         }
 						else if((_mouse.x >= 268 && _mouse.x <= 491) && (_mouse.y >= 372 && _mouse.y <= 438)){
-							clicked2 = false;
 							menu = false;
 							options = true;
 						}
@@ -219,6 +229,18 @@ int main()
 							menu = true;
 						}
 					}
+					else if(over_screen){
+						if(_mouse.x >= 107 && _mouse.x <= 319 && _mouse.y >= 504 && _mouse.y <= 570){
+							over_screen = 0;
+							menu = 1;
+						}	
+						else if(_mouse.x >= 438 && _mouse.x <= 661 && _mouse.y >= 504 && _mouse.y <= 570){
+							over_screen = false;
+							game = true;
+							mode = 1;
+							new_score = false;
+						}
+					}
                 }
             }
         }
@@ -227,15 +249,12 @@ int main()
             screen.clear();
             screen.draw(main);
             if(clicked1){
-                play.setPosition(268, 289);
                 screen.draw(play);
             }
 			else if(clicked2){
-				opts.setPosition(268, 376);
 				screen.draw(opts);
 			}
             else if(clicked3){
-                quit.setPosition(268, 463);
                 screen.draw(quit);
             }
             screen.display();
@@ -259,7 +278,7 @@ int main()
             head.setPosition(16 * hp.first, 16 * hp.second);
 
 			for(auto i: bldr){
-				boulder.setPosition(32 * i.first, 32 * i.second);
+				boulder.setPosition(16 * i.first, 16 * i.second);
 				screen.draw(boulder);
 			}
            
@@ -304,38 +323,30 @@ int main()
                 l = x;
                 score = 0;
                 h_s2.close();
-                srand(r_factor + time(NULL));
-                x_apple = (rand()%39) + 4;
-                y_apple = (rand()%35) + 4;
-
-				for(int i = 0 ; i < 3; ++ i){
-					r_factor += i * 2 + 6577;
-					srand(r_factor);
-					bldr[i].first = (rand()%17) + 3;
-					bldr[i].second = (rand()%15) + 4;
-					cout << bldr[i].first << " " << bldr[i].second << "\n";
-					taken[bldr[i].second][bldr[i].first] = true;
-					taken[bldr[i].second][bldr[i].first + 1] = true;
-					taken[bldr[i].second + 1][bldr[i].first + 1] = true;
-					taken[bldr[i].second + 1][bldr[i].first] = true;
-
-				}
+				
 				vector <bitset <45>> taken(40);
 				taken[26][23] = 1;
 				taken[25][23] = 1;
 				taken[24][23] = 1;
 				taken[23][23] = 1;
-				r_factor = 0;
+				r_factor = time(NULL);
+
+				choose(x_apple, y_apple, taken, r_factor, 39, 35, 4, 4, 0, 0);
+
+				for(int i = 0 ; i < 3; ++ i){
+					r_factor += i * i + 6577;
+					choose(bldr[i].first, bldr[i].second, taken, r_factor, 30, 30, 6, 6, 1, 1);
+					taken[bldr[i].second][bldr[i].first] = true;
+					taken[bldr[i].second][bldr[i].first + 1] = true;
+					taken[bldr[i].second + 1][bldr[i].first + 1] = true;
+					taken[bldr[i].second + 1][bldr[i].first] = true;
+				}
             }
         }
 
         if(over_screen){
-            rec.setPosition(64, 64);
-            game_over.setPosition(265, 315);
-            game_over.setCharacterSize(40);
-            game_over.setString("Game Over");
-            screen.draw(rec);
-            screen.draw(game_over);
+            over.setPosition(64, 64);
+			screen.draw(over);
 
             if(new_score){
                 game_over.setPosition(307, 370);
@@ -347,6 +358,12 @@ int main()
                 game_over.setString(to_string(l));
                 screen.draw(game_over);
             }
+			if(clicked4){
+				screen.draw(mb);
+			}
+			else if(clicked5){
+				screen.draw(pa);
+			}
             screen.display();
         }
 
