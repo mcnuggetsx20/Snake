@@ -15,7 +15,7 @@ vector <pair <int, int>> bldr(3);
 vector <bitset <45>> taken(40);
 int x_apple, y_apple, x_boulder, y_boulder, r_factor = time(NULL), ans = 0, score = 0, mode = 1, counter = 0, diff = 0, x, arrow = 0;
 pair <int, int> hp;
-bool screen_on = true, eaten = false, start = false, refresh = true, lost = false, vim_practice = true, over_screen = false, game = false, options = false,  menu = true, new_score = false, clicked1 = false, clicked2 = false, clicked3 = false, clicked4 = false, clicked5= false;
+bool screen_on = true, eaten = false, start = false, refresh = true, lost = false, vim_practice = false, over_screen = false, game = false, options = false,  menu = true, new_score = false, clicked1 = false, clicked2 = false, clicked3 = false, clicked4 = false, clicked5= false;
 Vector2i _mouse;
 
 Color bck_color(170, 218, 24);
