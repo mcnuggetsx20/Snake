@@ -231,6 +231,7 @@ int main()
 							options = true;
 						}
                     }
+					
 					else if(options){ 
 						arrow = 0;
 						arrow += (_mouse.x >= 70 && _mouse.x <= 119) && (_mouse.y >= 49 && _mouse.y <= 70);
