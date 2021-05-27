@@ -51,7 +51,7 @@ void choose(int &x, int &y, vector <bitset <45>> taken, int r_factor, int a, int
 	srand(r_factor);
 	x = (rand()%a) + c;
 	y = (rand()%b) + d;
-	while(taken[y][x] || taken[y][x+w] || taken[y+h][w] || taken[y+h][x+w]){
+	while(taken[y][x] || taken[y][x+w] || taken[y+h][x] || taken[y+h][x+w]){
 		r_factor += time(NULL);
 		srand(r_factor);
 		x = (rand()%a) + c;
