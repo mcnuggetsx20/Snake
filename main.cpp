@@ -51,7 +51,7 @@ int main()
 
     RenderWindow screen {VideoMode{768, 704}, "snake v1.0"};
 	screen.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
-    screen.setFramerateLimit(60);
+    screen.setFramerateLimit(30);
 
     Texture iapple, ihead, ibody, ibck, imain, iquit, iplay, iopts, ioptions_screen, iboulder, iover, ipa, imb, ion, ioff;
     iapple.loadFromFile("assets/apple.png");
@@ -295,8 +295,8 @@ int main()
 
 		else if(game){
             ++counter;
-            diff = !(counter%5);
-            counter %= 5;
+            diff = !(counter%3);
+            counter %= 3;
 
             if(start){
                 move(bldr, hp, diff, mode, x_apple, y_apple, lost, eaten);
